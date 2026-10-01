@@ -1,5 +1,5 @@
-from types.dimension import Dimension
-from types.orientation import Orientation
+from type.dimension import Dimension
+from type.orientation import Orientation
 
 class Package:
     def __init__(self, id : str, dimension : Dimension,

@@ -1,4 +1,4 @@
-from types.dimension import Dimension
+from type.dimension import Dimension
 
 class Truck:
     _id_count = 1
