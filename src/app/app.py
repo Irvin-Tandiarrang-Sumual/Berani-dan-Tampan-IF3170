@@ -10,7 +10,7 @@ class App:
     def run(self):
         try:
             reader = Reader(self.inputFile)
-            initialState = reader.loadState()
+            problem = reader.loadState()
         except FileNotFoundError:
             print(f"File {self.inputFile} doesn't exist")
             print(f"Put your file inside the tests directory")
@@ -18,12 +18,12 @@ class App:
         
         localSearchFactory = LocalSearchAlgorithmFactory()
         try:
-            localsearch = localSearchFactory.getLocalSearchAlgorithm(self.algorithm, initialState)
+            localsearch = localSearchFactory.getLocalSearchAlgorithm(self.algorithm, problem)
         except ValueError:
             print(f"Selected algorithm {self.algorithm} doesn't exist")
             return
 
-        states = localsearch.execute()
+        result = localsearch.execute()
 
         # visualizer = Visualizer(states)
         # visualizer.visualize()

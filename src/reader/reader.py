@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from model.state import State
+from model.problem import Problem
 from model.truck import Truck
 from model.package import Package
 from type.dimension import Dimension
@@ -10,10 +10,10 @@ class Reader:
     def __init__(self, filename : str):
         self.filepath = Path(__file__).parent.parent.parent / "tests" / filename
         
-    def loadState(self) -> State:
+    def loadProblem(self) -> Problem:
         with open(self.filepath, "r") as file:
             data = json.load(file)
-        return State(
+        return Problem(
             self._load_trucks(data["trucks"]),
             self._load_packages(data["packages"])
         )
