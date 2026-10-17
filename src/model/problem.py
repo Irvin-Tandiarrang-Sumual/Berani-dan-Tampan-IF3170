@@ -10,5 +10,5 @@ class Problem:
     def generate_initial_state() -> State:
         return State
 
-    def calculate_objective_value() -> float:
+    def calculate_objective_value(state : State) -> float:
         return 0.0
