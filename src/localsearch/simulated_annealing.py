@@ -47,7 +47,7 @@ class SimulatedAnnealing(LocalSearch):
                 result.final_objective_value_result = current_objective_value
                 result.finalState = current_state
 
-            next_state = current_state.generate_next_random_state()
+            next_state = self.problem.generate_next_random_state(current_state)
             next_objective_value= self.problem.calculate_objective_value(next_state)
 
             objective_value_difference = next_objective_value - current_objective_value
@@ -83,4 +83,3 @@ class SimulatedAnnealing(LocalSearch):
 
     def _is_new_best_objective_value(self, best_objective_value : float, new_objective_value : float) -> bool:
         return best_objective_value < new_objective_value
-
