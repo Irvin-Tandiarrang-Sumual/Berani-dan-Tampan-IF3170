@@ -76,7 +76,7 @@ class SimulatedAnnealing(LocalSearch):
         self.temperature = self.temperature * (alpha ** iteration)
 
     def _calculate_acceptance_probability(self, objective_value_difference: float) -> float:
-        return math.e ** (objective_value_difference / self.temperature)
+        return math.exp(- objective_value_difference / self.temperature)
 
     def _is_worse_accepted(self, acceptance_probability : float) -> bool:
         return acceptance_probability < random()
