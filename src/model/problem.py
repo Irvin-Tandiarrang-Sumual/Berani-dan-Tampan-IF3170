@@ -53,3 +53,27 @@ class Problem:
         self.insidePackage[0] = allPackage
         
         return self
+
+    def _swap_package(packaged_id_inside : str, package_id_outside : str):
+        pass
+
+    def _change_package_coordinate(package_id : str):
+        pass
+
+    def _rotate_package_coordinate(coordinate : Coordinate) -> Coordinate:
+        pass
+
+    def _is_state_valid() -> bool:
+        pass
+    
+    def _is_package_floating(self, state : State) -> bool:
+        pass
+
+    def _is_package_within_bounds(self, state : State) -> bool:
+        pass
+
+    def _is_truck_overloaded(self, state : State) -> bool:
+        pass
+
+    def _is_fragile_package_on_top(self, state : State) -> bool:
+        pass
