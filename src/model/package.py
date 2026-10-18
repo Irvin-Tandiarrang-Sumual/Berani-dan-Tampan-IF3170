@@ -7,7 +7,7 @@ class Package:
                 weight : int, isFragile : bool, ETA : int):
         self.id = id
         self.dimension = dimension
-        self.orientation = Orientation
+        self.orientation = orientation
         self.value = value
         self.weight = weight
         self.isFragile = isFragile
