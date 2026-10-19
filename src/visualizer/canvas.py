@@ -86,21 +86,34 @@ class Canvas:
         ax_3d.set_title("Package Outside Truck")
         self._draw_packages_outside(ax_3d, problem, packages_outside_truck_id)
 
-    def _draw_packages_in_truck(self, ax_3d : Axes3D, truck_id : str, inside_packages : list[str],
-                        problem : Problem, state : State):
+    
+    def _draw_packages_in_truck(self, ax_3d: Axes3D, truck_id: str, inside_packages: list[str], problem: Problem, state: State):
+        dim = problem.truck_map[truck_id].dimension
+        w, l, h = dim.w, dim.l, dim.h
 
         for package_id in inside_packages:
-            self._draw_package_inside(ax_3d,
-                        problem.package_map[package_id].dimension,
-                        package_id, state.placements[package_id])
+            placement = state.placements[package_id]
+            size = placement.orientation.get_oriented_dimensions(problem.package_map[package_id].dimension)
+            x, y, z = placement.coordinate.x, placement.coordinate.y, placement.coordinate.z
 
-    def _draw_package_inside(self, ax_3d : Axes3D, package_dimension : Dimension,
-                package_id : str, package_placement : PackagePlacement):
-        
-        ax_3d.bar3d(x=package_placement.coordinate.x, y=package_placement.coordinate.y,
-                z=package_placement.coordinate.z, dx=package_dimension.w,
-                dy=package_dimension.l, dz=package_dimension.h,
-                color=self.package_color_lookup_table[package_id], edgecolor='black', alpha=0.5)
+            ax_3d.bar3d(x, y, z, size.w, size.l, size.h, color=self.package_color_lookup_table[package_id], edgecolor="black", alpha=0.7)
+            ax_3d.text(x + size.w / 2, y + size.l / 2, z + size.h, package_id, ha="center", fontsize=7)
+
+        for z in (0, h):
+            ax_3d.plot([0, w, w, 0, 0], [0, 0, l, l, 0], [z] * 5, color="black", alpha=0.6)
+
+        for x in (0, w):
+            for y in (0, l):
+                ax_3d.plot([x, x], [y, y], [0, h], color="black", alpha=0.6)
+
+        ax_3d.set_xlim(0, w)
+        ax_3d.set_ylim(0, l)
+        ax_3d.set_zlim(0, h)
+        ax_3d.set_box_aspect((w, l, h))
+        ax_3d.set_xlabel("X")
+        ax_3d.set_ylabel("Y")
+        ax_3d.set_zlabel("Z")
+
         
     def _draw_packages_outside(self, ax_3d : Axes3D, problem : Problem,
                         outside_packages_id : list[str]):
