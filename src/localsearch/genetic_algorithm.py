@@ -6,7 +6,6 @@ from localsearch.dto import GeneticAlgorithmResult
 from localsearch.local_search import LocalSearch
 from model.problem import Problem
 from model.state import PackagePlacement, State
-from type.orientation import Orientation
 
 
 class GeneticAlgorithm(LocalSearch):
@@ -50,6 +49,8 @@ class GeneticAlgorithm(LocalSearch):
                 candidate = self.problem._find_feasible_placement(state, package_id, placement.truck_id, [placement.orientation], rng)
             if candidate is not None:
                 state = candidate
+        if not self.problem.is_state_valid(state):
+            raise ValueError("Repair produced an invalid state")
         return state
 
     def _crossover(self, first: State, second: State, rng: random.Random) -> State:
@@ -101,11 +102,15 @@ class GeneticAlgorithm(LocalSearch):
             max_history.append(max(fitnesses))
             avg_history.append(sum(fitnesses) / len(fitnesses))
 
+        final_best_index = max(range(len(population)), key=lambda i: fitnesses[i])
+        final_state = population[final_best_index].copy()
+        final_fitness = fitnesses[final_best_index]
+
         return GeneticAlgorithmResult(
-            initialState=initial_state,
-            finalState=best_state,
+            initial_state=initial_state,
+            final_state=final_state,
             objective_values_history_per_iteration=max_history.copy(),
-            final_objective_value_result=best_fitness,
+            final_objective_value_result=final_fitness,
             duration_seconds=time.perf_counter() - start,
             population_size=self.population_size,
             max_iterations=self.max_iterations,
@@ -113,5 +118,7 @@ class GeneticAlgorithm(LocalSearch):
             avg_fitness_history=avg_history,
             initial_population=initial_population,
             final_population=[state.copy() for state in population],
-            seed=self.seed
+            seed=self.seed,
+            best_ever_state=best_state,
+            best_ever_fitness=best_fitness,
         )
