@@ -9,7 +9,7 @@ class App:
     def run(self):
         try:
             reader = Reader(self.inputFile)
-            problem = reader.loadState()
+            problem = reader.load_problem()
         except FileNotFoundError:
             print(f"File {self.inputFile} doesn't exist")
             print(f"Put your file inside the tests directory")
@@ -24,4 +24,4 @@ class App:
 
         result = localsearch.execute()
 
-        result.visualize(problem)
+        result.visualize(problem, 15, 12)

@@ -10,7 +10,7 @@ class Reader:
     def __init__(self, filename : str):
         self.filepath = Path(__file__).parent.parent.parent / "tests" / filename
         
-    def loadProblem(self) -> Problem:
+    def load_problem(self) -> Problem:
         with open(self.filepath, "r") as file:
             data = json.load(file)
         return Problem(

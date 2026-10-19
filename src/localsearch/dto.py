@@ -1,18 +1,18 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from model.state import State
 from abc import ABC, abstractmethod
 from visualizer.canvas import ChartInput
 from visualizer.canvas import GridLocation
 from visualizer.canvas import Canvas
 from model.problem import Problem
-
+from typing import Optional
 @dataclass
 class LocalSearchResult(ABC):
-    initial_state : State
-    final_state : State
-    objective_values_history_per_iteration: list[float]
-    final_objective_value_result : float
-    duration_seconds : float
+    initial_state : Optional[State] = None
+    final_state : Optional[State] = None
+    objective_values_history_per_iteration: list[float] = field(default_factory=list)
+    final_objective_value_result : Optional[float] = field(default_factory=list)
+    duration_seconds : float = 0
 
     @abstractmethod
     def visualize(self, width : int = 10, height : int = 8):
@@ -21,8 +21,8 @@ class LocalSearchResult(ABC):
 @dataclass
 class SimulatedAnnealingResult(LocalSearchResult):
     algorithm_name : str = "Simulated Annealing"
-    acceptance_history_per_iteration : list[float]
-    stuck_frequency : int
+    acceptance_history_per_iteration: list = field(default_factory=list)
+    stuck_frequency : int = 0
 
     def visualize(self, problem : Problem, width : int, height : int):
         canvas = Canvas(width, height, 3, 3, problem.package_colors)
