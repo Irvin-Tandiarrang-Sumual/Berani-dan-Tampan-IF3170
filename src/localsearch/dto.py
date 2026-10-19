@@ -24,20 +24,26 @@ class SimulatedAnnealingResult(LocalSearchResult):
     acceptance_history_per_iteration: list = field(default_factory=list)
     stuck_frequency : int = 0
 
-    def visualize(self, problem : Problem, width : int, height : int):
-        canvas = Canvas(width, height, 3, 3, problem.package_colors)
-        
+    def visualize(self, problem: Problem, width: int, height: int):
+        canvas = Canvas(width, height, 3, 2, problem.package_colors)
         canvas.write_algorithm_name(self.algorithm_name)
-        
-        canvas.draw_line_chart(ChartInput(self.objective_values_history_per_iteration,
-                                    "Objective Values per Iteration", "Iteration", "Objective values"),
-                                    GridLocation(0,1))
-        canvas.draw_line_chart(ChartInput(self.acceptance_history_per_iteration,
-                                    "Acceptance History per Iteration", "Iteration", "Acceptance"),
-                                    GridLocation(0,2))
-        
-        canvas.visualize_state(problem, self.initial_state, "Initial State", 1)
-        canvas.visualize_state(problem, self.final_state, "Final State", 2)
 
-        canvas.write_top_right_note(f"""Final Objective Value = {self.final_objective_value_result}\nDuration (in seconds) = {self.duration_seconds}\nStuck Frequency = {self.stuck_frequency}\n""")
+        canvas.visualize_state(problem, self.initial_state, "Initial State", 0)
+        canvas.visualize_state(problem, self.final_state, "Final State", 1)
+
+        canvas.draw_line_chart(
+            ChartInput(self.objective_values_history_per_iteration, "Objective Values per Iteration", "Iteration", "Objective Value"),
+            GridLocation(1, 0)
+        )
+
+        canvas.draw_line_chart(
+            ChartInput(self.acceptance_history_per_iteration, "Acceptance History per Iteration", "Iteration", "Acceptance"),
+            GridLocation(1, 1)
+        )
+
+        canvas.write_bottom_note(
+            f"Final Objective Value: {self.final_objective_value_result}    |    "
+            f"Duration: {self.duration_seconds:.3f} s    |    "
+            f"Stuck Frequency: {self.stuck_frequency}"
+        )
         canvas.show()

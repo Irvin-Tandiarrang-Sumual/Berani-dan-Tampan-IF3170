@@ -21,17 +21,22 @@ class ChartInput:
     y_label : str
 
 class Canvas:
-    def __init__(self, width : int, height : int,
-                row : int, column : int,
-                package_color_lookup_table : dict[str, str]):
+    def __init__(self, width: int, height: int,
+             row: int, column: int,
+             package_color_lookup_table: dict[str, str]):
         self.row = row
         self.column = column
         self.fig = plt.figure(figsize=(width, height))
-        self.gs = gridspec.GridSpec(row, column)
+        self.gs = gridspec.GridSpec(
+            row, column, figure=self.fig,
+            height_ratios=[5, 2.2, 0.8],
+            left=0.06, right=0.96, top=0.92, bottom=0.05,
+            hspace=0.48, wspace=0.28
+        )
         self.package_color_lookup_table = package_color_lookup_table
 
-    def write_algorithm_name(self, algorithm_name : str):
-        plt.suptitle(algorithm_name)
+    def write_algorithm_name(self, algorithm_name: str):
+        self.fig.suptitle(algorithm_name, fontsize=16, fontweight="bold", y=0.975)
     
     def draw_line_chart(self, chart_input : ChartInput, grid_location : GridLocation):
         ax = self.fig.add_subplot(self.gs[grid_location.row, grid_location.col])
@@ -47,12 +52,10 @@ class Canvas:
             0.5, 0.5, note, fontsize = 12, va = "center", linespacing = 1.5
         )
 
-    def write_bottom_note(self, note : str):
-        ax = self.fig.add_subplot(self.gs[self.row - 1, :])
+    def write_bottom_note(self, note: str):
+        ax = self.fig.add_subplot(self.gs[2, :])
         ax.axis("off")
-        ax.text(
-            0.5, 0.5, note, fontsize = 12, va = "center", linespacing = 1.5
-        )
+        ax.text(0.5, 0.5, note, ha="center", va="center", fontsize=10, linespacing=1.4, transform=ax.transAxes)
 
     def write_top_right_note(self, note :str):
         ax = self.fig.add_subplot(self.gs[self.row - 1, self.column - 1])
@@ -62,30 +65,43 @@ class Canvas:
         )
 
     def show(self):
-        plt.tight_layout()
         plt.show()
 
-    def visualize_state(self, problem : Problem, state : State, title : str, row_idx : int):
-        packages_outside_truck_id = state.get_outside_package_ids()
-        
-        gs_sub = gridspec.GridSpecFromSubplotSpec(1, len(problem.trucks) + 1, subplot_spec=self.gs[row_idx, :], wspace=0.5, hspace=0.5)
+    def visualize_state(self, problem: Problem, state: State,
+                        title: str, column_idx: int):
+        # Initial State di kiri, Final State di kanan
+        panel = gridspec.GridSpecFromSubplotSpec(
+            4, 1, subplot_spec=self.gs[0, column_idx],
+            height_ratios=[0.3, 3.2, 1.4, 0.4],
+            hspace=0.25
+        )
 
-        inner_col_idx = 0
-        for truck in problem.trucks:
-            package_inside_truck_ids = state.get_inside_package_ids(truck.id)
-            ax_3d = self.fig.add_subplot(gs_sub[0, inner_col_idx], projection = "3d")
-            if inner_col_idx == 0:
-                ax_3d.set_title(title, fontsize=11, fontweight='bold', loc='left', y=1.25)
-            ax_3d.set_title(f"Package inside Truck {truck.id}") 
-            self._draw_packages_in_truck(ax_3d, truck.id, package_inside_truck_ids, problem,
-                                    state)
-            inner_col_idx += 1
+        # Judul state
+        ax_title = self.fig.add_subplot(panel[0])
+        ax_title.axis("off")
+        ax_title.text(0.5, 0.5, title, ha="center", va="center", fontsize=13, fontweight="bold")
 
-        
-        ax_outside = self.fig.add_subplot(gs_sub[0, inner_col_idx])
-        self._draw_packages_outside(ax_outside, problem, packages_outside_truck_id)
+        # Visualisasi truk
+        trucks_grid = gridspec.GridSpecFromSubplotSpec(1, len(problem.trucks), subplot_spec=panel[1], wspace=0.25)
 
-    
+        for i, truck in enumerate(problem.trucks):
+            ax = self.fig.add_subplot(trucks_grid[0, i], projection="3d")
+            ax.set_title(str(truck.id), fontsize=9)
+            self._draw_packages_in_truck(
+                ax, truck.id, state.get_inside_package_ids(truck.id),
+                problem, state
+            )
+
+        # Paket di luar truk
+        ax_outside = self.fig.add_subplot(panel[2])
+        self._draw_packages_outside(ax_outside, problem, state.get_outside_package_ids())
+
+        # Total objective value state
+        ax_value = self.fig.add_subplot(panel[3])
+        ax_value.axis("off")
+        value = problem.calculate_objective_value(state)
+        ax_value.text(0.5, 0.5, f"State Value: {value}", ha="center", va="center", fontsize=11, fontweight="bold")
+
     def _draw_packages_in_truck(self, ax_3d: Axes3D, truck_id: str, inside_packages: list[str], problem: Problem, state: State):
         dim = problem.truck_map[truck_id].dimension
         w, l, h = dim.w, dim.l, dim.h
