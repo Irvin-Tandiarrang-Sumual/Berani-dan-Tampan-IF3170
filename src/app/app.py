@@ -5,7 +5,7 @@ from reader.reader import Reader
 
 class App:
     def __init__(self, args: list[str]):
-        parser = argparse.ArgumentParser(description="Local Search Visualizer")
+        parser = argparse.ArgumentParser(description="Local Search")
         parser.add_argument("algorithm", choices=["simulated_annealing", "genetic_algorithm"])
         parser.add_argument("input_file", help="JSON filename inside tests/")
         parser.add_argument("--population-size", type=int, default=20)

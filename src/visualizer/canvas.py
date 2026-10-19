@@ -32,18 +32,19 @@ class Canvas:
         self.gs = gridspec.GridSpec(
             row, column, figure=self.fig,
             height_ratios=[5, 2.2, 0.8],
-            left=0.06, right=0.96, top=0.92, bottom=0.05,
+            left=0.06, right=0.96, top=0.875, bottom=0.05,
             hspace=0.48, wspace=0.28
         )
         self.package_color_lookup_table = package_color_lookup_table
         self._truck_problem = None
         self._truck_index = 0
-        self._truck_views = []
+        self._state_views = {}
         self._truck_buttons = []
         self._truck_label = None
+        self._population_buttons = []
 
     def write_algorithm_name(self, algorithm_name: str):
-        self.fig.suptitle(algorithm_name, fontsize=16, fontweight="bold", y=0.975)
+        self.fig.suptitle(algorithm_name, fontsize=16, fontweight="bold", y=0.985)
     
     def draw_line_chart(self, chart_input : ChartInput, grid_location : GridLocation):
         ax = self.fig.add_subplot(self.gs[grid_location.row, grid_location.col])
@@ -114,48 +115,89 @@ class Canvas:
         plt.show()
 
     def visualize_state(self, problem: Problem, state: State,
-                        title: str, column_idx: int):
+                        title: str, column_idx: int, population: list[State] | None = None):
         if not problem.trucks:
             raise ValueError("At least one truck is required")
+        if population is not None and not population:
+            raise ValueError("Population cannot be empty")
         
         if self._truck_problem is None:
             self._truck_problem = problem
+            self._truck_label = self.fig.text(0.5, 0.931, "", ha="center", va="center", fontsize=10)
             if len(problem.trucks) > 1:
-                ax_prev = self.fig.add_axes([0.36, 0.903, 0.06, 0.033])
-                ax_next = self.fig.add_axes([0.58, 0.903, 0.06, 0.033])
+                ax_prev = self.fig.add_axes([0.345, 0.915, 0.045, 0.032])
+                ax_next = self.fig.add_axes([0.610, 0.915, 0.045, 0.032])
                 prev_button = Button(ax_prev, "<")
                 next_button = Button(ax_next, ">")
                 prev_button.on_clicked(lambda event: self._change_truck(-1))
                 next_button.on_clicked(lambda event: self._change_truck(1))
                 self._truck_buttons = [prev_button, next_button]
-                self._truck_label = self.fig.text(0.50, 0.92, "", ha="center", va="center")
-        
-        # Initial State di kiri, Final State di kanan
-        panel = gridspec.GridSpecFromSubplotSpec(
-            4, 1, subplot_spec=self.gs[0, column_idx],
-            height_ratios=[0.3, 3.2, 1.4, 0.4],
-            hspace=0.25
-        )
 
-        # Judul state
+        has_population = population is not None
+        panel = gridspec.GridSpecFromSubplotSpec(
+            5 if has_population else 4, 1, subplot_spec=self.gs[0, column_idx],
+            height_ratios=[0.35, 0.47, 3.15, 1.4, 0.4] if has_population else [0.35, 3.15, 1.4, 0.4],
+            hspace=0.28
+        )
+        
         ax_title = self.fig.add_subplot(panel[0])
         ax_title.axis("off")
-        ax_title.text(0.5, 0.5, title, ha="center", va="center", fontsize=13, fontweight="bold")
+        ax_title.text(0.5, 0.5, title, ha="center", va="center", fontsize=12, fontweight="bold")
 
-        # Visualisasi truk
-        ax_truck = self.fig.add_subplot(panel[1], projection="3d")
-        self._truck_views.append((ax_truck, state))
-        self._draw_selected_truck()
-
-        # Paket di luar truk
-        ax_outside = self.fig.add_subplot(panel[2])
-        self._draw_packages_outside(ax_outside, problem, state.get_outside_package_ids())
-
-        # Total objective value state
-        ax_value = self.fig.add_subplot(panel[3])
+        truck_row = 2 if has_population else 1
+        ax_truck = self.fig.add_subplot(panel[truck_row], projection="3d")
+        ax_outside = self.fig.add_subplot(panel[truck_row + 1])
+        ax_value = self.fig.add_subplot(panel[truck_row + 2])
         ax_value.axis("off")
-        value = problem.calculate_objective_value(state)
-        ax_value.text(0.5, 0.5, f"State Value: {value}", ha="center", va="center", fontsize=11, fontweight="bold")
+        value_text = ax_value.text(0.5, 0.5, "", ha="center", va="center", fontsize=11, fontweight="bold")
+
+        selected_index = max(range(len(population)), key=lambda i: problem.calculate_objective_value(population[i])) if has_population else None
+        if has_population:
+            state = population[selected_index]
+
+        view = {
+            "state": state, "population": population, "selected_index": selected_index,
+            "best_index": selected_index, "ax_truck": ax_truck,
+            "value_text": value_text, "population_label": None,
+            "outside_ids": state.get_outside_package_ids()
+        }
+        self._state_views[column_idx] = view
+        view["draw_outside"] = self._draw_packages_outside(ax_outside, problem, view["outside_ids"])
+
+        if has_population:
+            selector = gridspec.GridSpecFromSubplotSpec(1, 3, subplot_spec=panel[1], width_ratios=[1, 5, 1], wspace=0.05)
+            ax_prev = self.fig.add_subplot(selector[0])
+            ax_text = self.fig.add_subplot(selector[1])
+            ax_next = self.fig.add_subplot(selector[2])
+            ax_text.axis("off")
+            view["population_label"] = ax_text.text(0.5, 0.5, "", ha="center", va="center", fontsize=9)
+            prev_button = Button(ax_prev, "<")
+            next_button = Button(ax_next, ">")
+            prev_button.on_clicked(lambda event, col=column_idx: self._change_individual(col, -1))
+            next_button.on_clicked(lambda event, col=column_idx: self._change_individual(col, 1))
+            self._population_buttons.extend([prev_button, next_button])
+
+        self._render_state(column_idx)
+        
+    def _change_individual(self, column_idx: int, direction: int):
+        view = self._state_views[column_idx]
+        if view["population"] is None:
+            return
+        view["selected_index"] = (view["selected_index"] + direction) % len(view["population"])
+        view["state"] = view["population"][view["selected_index"]]
+        self._render_state(column_idx)
+
+    def _render_state(self, column_idx: int):
+        view = self._state_views[column_idx]
+        value = self._truck_problem.calculate_objective_value(view["state"])
+        view["value_text"].set_text(f"State Value: {value}")
+        if view["population_label"] is not None:
+            idx = view["selected_index"]
+            best = " (Best)" if idx == view["best_index"] else ""
+            view["population_label"].set_text(f"Individual {idx + 1}/{len(view['population'])}{best}")
+        view["outside_ids"][:] = view["state"].get_outside_package_ids()
+        view["draw_outside"](reset=True)
+        self._draw_selected_truck()
 
     def _draw_packages_in_truck(self, ax_3d: Axes3D, truck_id: str, inside_packages: list[str], problem: Problem, state: State):
         dim = problem.truck_map[truck_id].dimension
@@ -189,9 +231,12 @@ class Canvas:
     def _draw_packages_outside(self, ax, problem: Problem, outside_packages_id: list[str]):
         page_size = 8
         start = [0]
-        total = len(outside_packages_id)
 
-        def draw():
+        def draw(reset=False):
+            if reset:
+                start[0] = 0
+            total = len(outside_packages_id)
+            start[0] = min(start[0], max(0, total - page_size))
             ax.clear()
             ax.axis("off")
             ax.set_title(f"Outside Packages ({total})", fontsize=10)
@@ -216,6 +261,9 @@ class Canvas:
         def on_scroll(event):
             if event.inaxes is not ax:
                 return
+            total = len(outside_packages_id)
+            if total <= page_size:
+                return
             step = 3 if event.button == "down" else -3
             next_start = max(0, min(total - page_size, start[0] + step))
 
@@ -225,17 +273,20 @@ class Canvas:
                 self.fig.canvas.draw_idle()
 
         draw()
-        if total > page_size:
-            self.fig.canvas.mpl_connect("scroll_event", on_scroll)
+        self.fig.canvas.mpl_connect("scroll_event", on_scroll)
+        return draw
             
 
     def _change_truck(self, direction: int):
         self._truck_index = (self._truck_index + direction) % len(self._truck_problem.trucks)
         self._draw_selected_truck()
 
+    
     def _draw_selected_truck(self):
         truck = self._truck_problem.trucks[self._truck_index]
-        for ax, state in self._truck_views:
+        for view in self._state_views.values():
+            ax = view["ax_truck"]
+            state = view["state"]
             elev, azim = ax.elev, ax.azim
             ax.clear()
             ax.set_title(str(truck.id), fontsize=9)
@@ -243,7 +294,5 @@ class Canvas:
             ax.view_init(elev=elev, azim=azim)
 
         if self._truck_label is not None:
-            self._truck_label.set_text(f"{self._truck_index + 1}/{len(self._truck_problem.trucks)}: {truck.id}")
-
+            self._truck_label.set_text(f"Truck {self._truck_index + 1}/{len(self._truck_problem.trucks)}: {truck.id}")
         self.fig.canvas.draw_idle()
-

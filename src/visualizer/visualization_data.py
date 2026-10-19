@@ -49,3 +49,5 @@ class VisualizationData:
     final_state_label: str = "Final State"
     input_file: str | None = None
     run_label: str | None = None
+    initial_population: list[State] | None = None
+    final_population: list[State] | None = None

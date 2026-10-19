@@ -26,11 +26,15 @@ class LocalSearchResult(ABC):
     def _get_state_labels(self) -> tuple[str, str]:
         return "Initial State", "Final State"
 
+    def _get_populations(self) -> tuple[list[State] | None, list[State] | None]:
+        return None, None
+
     def to_visualization_data(self, problem: Problem) -> VisualizationData:
         if self.initial_state is None or self.final_state is None:
             raise ValueError("Initial and final states must be available for visualization")
 
         initial_label, final_label = self._get_state_labels()
+        initial_population, final_population = self._get_populations()
         final_value = problem.calculate_objective_value(self.final_state)
 
         metrics = [
@@ -51,14 +55,16 @@ class LocalSearchResult(ABC):
             metrics=metrics,
             initial_state_label=initial_label,
             final_state_label=final_label,
+            initial_population=initial_population,
+            final_population=final_population,
         )
 
     def visualize(self, problem: Problem, width: int = 15, height: int = 12) -> None:
         data = self.to_visualization_data(problem)
         canvas = Canvas(width, height, 3, 2, problem.package_colors)
         canvas.write_algorithm_name(data.algorithm_name)
-        canvas.visualize_state(problem, data.initial_state, data.initial_state_label, 0)
-        canvas.visualize_state(problem, data.final_state, data.final_state_label, 1)
+        canvas.visualize_state(problem, data.initial_state, data.initial_state_label, 0, data.initial_population)
+        canvas.visualize_state(problem, data.final_state, data.final_state_label, 1, data.final_population)
         canvas.draw_charts(data.charts)
         canvas.draw_metrics(data.metrics)
         canvas.show()
@@ -101,10 +107,10 @@ class GeneticAlgorithmResult(LocalSearchResult):
     problem: Problem | None = None
 
     def _get_state_labels(self) -> tuple[str, str]:
-        return (
-            "Initial State (Best of Initial Population)",
-            "Final State (Best of Final Population)",
-        )
+        return "Initial State", "Final State"
+
+    def _get_populations(self) -> tuple[list[State], list[State]]:
+        return self.initial_population, self.final_population
 
     def _get_charts(self) -> list[ChartConfig]:
         return [
