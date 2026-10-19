@@ -39,7 +39,5 @@ class SimulatedAnnealingResult(LocalSearchResult):
         canvas.visualize_state(problem, self.initial_state, "Initial State", 1)
         canvas.visualize_state(problem, self.final_state, "Final State", 2)
 
-        canvas.write_top_right_note(f"""Final Objective Value = {self.final_objective_value_result}\n
-                                            Duration (in seconds) = {self.duration_seconds}\n
-                                            Stuck Frequency = {self.stuck_frequency}\n""")
+        canvas.write_top_right_note(f"""Final Objective Value = {self.final_objective_value_result}\nDuration (in seconds) = {self.duration_seconds}\nStuck Frequency = {self.stuck_frequency}\n""")
         canvas.show()

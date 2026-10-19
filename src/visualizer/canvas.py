@@ -65,20 +65,25 @@ class Canvas:
         plt.tight_layout()
         plt.show()
 
-    def visualize_state(self, problem : Problem, state : State, title : str,row_idx : int):
+    def visualize_state(self, problem : Problem, state : State, title : str, row_idx : int):
         packages_outside_truck_id = state.get_outside_package_ids()
         
-        gs_sub = gridspec.GridSpecFromSubplotSpec(1, len(problem.trucks) + 1, subplot_spec=self.gs[1, :], wspace=0.5, hspace=0.5)
+        gs_sub = gridspec.GridSpecFromSubplotSpec(1, len(problem.trucks) + 1, subplot_spec=self.gs[row_idx, :], wspace=0.5, hspace=0.5)
 
         inner_col_idx = 0
         for truck in problem.trucks:
             package_inside_truck_ids = state.get_inside_package_ids(truck.id)
             ax_3d = self.fig.add_subplot(gs_sub[0, inner_col_idx], projection = "3d")
+            if inner_col_idx == 0:
+                ax_3d.set_title(title, fontsize=11, fontweight='bold', loc='left', y=1.25)
+            ax_3d.set_title(f"Package inside Truck {truck.id}") 
             self._draw_packages_in_truck(ax_3d, truck.id, package_inside_truck_ids, problem,
                                     state)
             inner_col_idx += 1
 
+        
         ax_3d = self.fig.add_subplot(gs_sub[0, inner_col_idx], projection = "3d")
+        ax_3d.set_title("Package Outside Truck")
         self._draw_packages_outside(ax_3d, problem, packages_outside_truck_id)
 
     def _draw_packages_in_truck(self, ax_3d : Axes3D, truck_id : str, inside_packages : list[str],
