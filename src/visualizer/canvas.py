@@ -8,6 +8,7 @@ from model.problem import Problem
 from type.dimension import Dimension
 import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
+from visualizer.visualization_data import ChartConfig, MetricConfig
 
 @dataclass
 class GridLocation:
@@ -50,6 +51,45 @@ class Canvas:
         ax.set_title(chart_input.title)
         ax.set_xlabel(chart_input.x_label)
         ax.set_ylabel(chart_input.y_label)
+    
+    def draw_charts(self, charts: list[ChartConfig]):
+        if len(charts) > 2:
+            raise ValueError("The current layout supports at most two charts")
+
+        for i, chart in enumerate(charts):
+            location = self.gs[1, :] if len(charts) == 1 else self.gs[1, i]
+            ax = self.fig.add_subplot(location)
+
+            for series in chart.series:
+                options = {"label": series.label}
+                if series.color is not None:
+                    options["color"] = series.color
+                ax.plot(series.get_x_values(), series.values, **options)
+
+            ax.set_title(chart.title, fontsize=10)
+            ax.set_xlabel(chart.x_label)
+            ax.set_ylabel(chart.y_label)
+            ax.grid(alpha=0.2)
+
+            if len(chart.series) > 1:
+                ax.legend(fontsize=8)
+                
+    def draw_metrics(self, metrics: list[MetricConfig]):
+        ax = self.fig.add_subplot(self.gs[2, :])
+        ax.axis("off")
+
+        if not metrics:
+            return
+
+        columns = min(4, len(metrics))
+        rows = (len(metrics) + columns - 1) // columns
+
+        for i, metric in enumerate(metrics):
+            x = (i % columns + 0.5) / columns
+            y = 1 - (i // columns + 0.5) / rows
+            value = f"{metric.value} {metric.unit}".strip()
+
+            ax.text(x, y, f"{metric.label}\n{value}", ha="center", va="center", fontsize=9, linespacing=1.3, transform=ax.transAxes)
 
     def write_sidebar_note(self, note : str):
         ax = self.fig.add_subplot(self.gs[:, self.column - 1])
