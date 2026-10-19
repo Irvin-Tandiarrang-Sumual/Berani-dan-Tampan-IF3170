@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from model.state import Problem
-from dto import LocalSearchResult
+from model.problem import Problem
+from localsearch.dto import LocalSearchResult
 
 class LocalSearch(ABC):
     def __init__(self, problem : Problem):

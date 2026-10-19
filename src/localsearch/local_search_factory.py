@@ -1,6 +1,6 @@
 from localsearch.simulated_annealing import SimulatedAnnealing
 from localsearch.local_search import LocalSearch
-from model.state import Problem
+from model.problem import Problem
 
 class LocalSearchAlgorithmFactory:
     def getLocalSearchAlgorithm(self, type : str, problem : Problem) -> LocalSearch:
