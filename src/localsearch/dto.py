@@ -17,3 +17,8 @@ class SimulatedAnnealingResult(LocalSearchResult):
 @dataclass
 class SteepestSidewaysResult(LocalSearchResult):
     num_of_iterations : int
+    
+@dataclass
+class RandomRestartResult(LocalSearchResult):
+    num_of_restarts : int
+    iterations_per_restarts : list[int]
