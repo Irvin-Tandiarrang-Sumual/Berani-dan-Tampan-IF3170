@@ -38,15 +38,15 @@ class LocalSearchAlgorithmFactory:
                 ga_input["seed"] = kwargs["seed"]
                 
             return GeneticAlgorithm(**ga_input)
-
-            return SimulatedAnnealing(problem)
         elif type == "steepest":
             return SteepestSidewaysHC(problem)
         elif type == 'sideways':
-            max_side_move = kwargs["max_side_move"]
+            if 'max_side_move' in kwargs:
+                max_side_move = kwargs["max_side_move"]
             return SteepestSidewaysHC(problem, max_side_move)
         elif type == 'random_restart':
-            max_restart = kwargs["max_restart"]
+            if 'max_restart' in kwargs:
+                max_restart = kwargs["max_restart"]
             return RandomRestartHC(problem, max_restart)
         elif type == 'stochastic':
             return StochasticHC(problem)

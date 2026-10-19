@@ -19,7 +19,7 @@ class App:
             return
 
         try:
-            localsearch = LocalSearchAlgorithmFactory.getLocalSearchAlgorithm(self.algorithm, problem, **self.kwargs)
+            localsearch = LocalSearchAlgorithmFactory().getLocalSearchAlgorithm(self.algorithm, problem, **self.kwargs)
         except ValueError:
             print(f"Selected algorithm {self.algorithm} doesn't exist")
             return
