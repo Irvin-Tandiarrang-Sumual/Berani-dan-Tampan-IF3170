@@ -7,6 +7,7 @@ from model.state import PackagePlacement
 from model.problem import Problem
 from type.dimension import Dimension
 import matplotlib.gridspec as gridspec
+from matplotlib.widgets import Button
 
 @dataclass
 class GridLocation:
@@ -34,6 +35,11 @@ class Canvas:
             hspace=0.48, wspace=0.28
         )
         self.package_color_lookup_table = package_color_lookup_table
+        self._truck_problem = None
+        self._truck_index = 0
+        self._truck_views = []
+        self._truck_buttons = []
+        self._truck_label = None
 
     def write_algorithm_name(self, algorithm_name: str):
         self.fig.suptitle(algorithm_name, fontsize=16, fontweight="bold", y=0.975)
@@ -69,6 +75,21 @@ class Canvas:
 
     def visualize_state(self, problem: Problem, state: State,
                         title: str, column_idx: int):
+        if not problem.trucks:
+            raise ValueError("At least one truck is required")
+        
+        if self._truck_problem is None:
+            self._truck_problem = problem
+            if len(problem.trucks) > 1:
+                ax_prev = self.fig.add_axes([0.36, 0.903, 0.06, 0.033])
+                ax_next = self.fig.add_axes([0.58, 0.903, 0.06, 0.033])
+                prev_button = Button(ax_prev, "<")
+                next_button = Button(ax_next, ">")
+                prev_button.on_clicked(lambda event: self._change_truck(-1))
+                next_button.on_clicked(lambda event: self._change_truck(1))
+                self._truck_buttons = [prev_button, next_button]
+                self._truck_label = self.fig.text(0.50, 0.92, "", ha="center", va="center")
+        
         # Initial State di kiri, Final State di kanan
         panel = gridspec.GridSpecFromSubplotSpec(
             4, 1, subplot_spec=self.gs[0, column_idx],
@@ -82,15 +103,9 @@ class Canvas:
         ax_title.text(0.5, 0.5, title, ha="center", va="center", fontsize=13, fontweight="bold")
 
         # Visualisasi truk
-        trucks_grid = gridspec.GridSpecFromSubplotSpec(1, len(problem.trucks), subplot_spec=panel[1], wspace=0.25)
-
-        for i, truck in enumerate(problem.trucks):
-            ax = self.fig.add_subplot(trucks_grid[0, i], projection="3d")
-            ax.set_title(str(truck.id), fontsize=9)
-            self._draw_packages_in_truck(
-                ax, truck.id, state.get_inside_package_ids(truck.id),
-                problem, state
-            )
+        ax_truck = self.fig.add_subplot(panel[1], projection="3d")
+        self._truck_views.append((ax_truck, state))
+        self._draw_selected_truck()
 
         # Paket di luar truk
         ax_outside = self.fig.add_subplot(panel[2])
@@ -172,3 +187,23 @@ class Canvas:
         draw()
         if total > page_size:
             self.fig.canvas.mpl_connect("scroll_event", on_scroll)
+            
+
+    def _change_truck(self, direction: int):
+        self._truck_index = (self._truck_index + direction) % len(self._truck_problem.trucks)
+        self._draw_selected_truck()
+
+    def _draw_selected_truck(self):
+        truck = self._truck_problem.trucks[self._truck_index]
+        for ax, state in self._truck_views:
+            elev, azim = ax.elev, ax.azim
+            ax.clear()
+            ax.set_title(str(truck.id), fontsize=9)
+            self._draw_packages_in_truck(ax, truck.id, state.get_inside_package_ids(truck.id), self._truck_problem, state)
+            ax.view_init(elev=elev, azim=azim)
+
+        if self._truck_label is not None:
+            self._truck_label.set_text(f"{self._truck_index + 1}/{len(self._truck_problem.trucks)}: {truck.id}")
+
+        self.fig.canvas.draw_idle()
+
