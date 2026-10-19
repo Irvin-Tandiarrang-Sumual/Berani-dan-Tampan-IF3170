@@ -5,8 +5,7 @@ from random import random
 
 from localsearch.local_search import LocalSearch
 from model.problem import Problem
-from model.state import State
-from dto import SimulatedAnnealingResult
+from localsearch.dto import SimulatedAnnealingResult
 
 # Reference
 ## Exponential Cooling for Temperature Reference : https://algorithmafternoon.com/books/simulated_annealing/chapter02/
@@ -14,7 +13,7 @@ from dto import SimulatedAnnealingResult
 class SimulatedAnnealing(LocalSearch):
     def __init__(self, problem : Problem,
                 temperature : float = 100,
-                minTemperature : float = 0,
+                minTemperature : float = 0.1,
                 maxIteration : int = 100):
         super().__init__(problem)
 
@@ -23,7 +22,7 @@ class SimulatedAnnealing(LocalSearch):
         self.maxIteration = maxIteration
 
     def execute(self) -> SimulatedAnnealingResult:
-        result = SimulatedAnnealingResult
+        result = SimulatedAnnealingResult()
 
         current_state = self.problem.generate_initial_state()
         result.initial_state = current_state
@@ -34,7 +33,7 @@ class SimulatedAnnealing(LocalSearch):
         result.final_objective_value_result = -1
 
         while(True):
-            self._exponential_cooling(self.temperature)
+            self._exponential_cooling(iteration)
 
             if self._is_stop_condition(iteration):
                 end = time.time()
@@ -67,7 +66,7 @@ class SimulatedAnnealing(LocalSearch):
             iteration += 1
 
     def _is_move_to_better(self, objective_value_difference : float):
-        return objective_value_difference > 0
+        return objective_value_difference >= 0
 
     def _is_stop_condition(self, iteration) -> bool:
         return self.temperature < self.minTemperature and iteration < self.maxIteration
