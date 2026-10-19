@@ -64,3 +64,11 @@ class State:
                 },
             }
         return result
+
+    def get_inside_packages_per_truck(self) -> dict[str, list[PackagePlacement]]:
+        packages_per_truck  : dict[str, list]= {}
+        for packaged_id, placement in self.placements.items():
+            if packaged_id:
+                packages_per_truck[placement.truck_id].append(placement)
+
+        return packages_per_truck

@@ -24,4 +24,4 @@ class App:
 
         result = localsearch.execute()
 
-        result.visualize()
+        result.visualize(problem)

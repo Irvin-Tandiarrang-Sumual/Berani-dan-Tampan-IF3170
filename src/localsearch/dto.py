@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from visualizer.canvas import ChartInput
 from visualizer.canvas import GridLocation
 from visualizer.canvas import Canvas
+from model.problem import Problem
 
 @dataclass
 class LocalSearchResult(ABC):
@@ -19,25 +20,26 @@ class LocalSearchResult(ABC):
 
 @dataclass
 class SimulatedAnnealingResult(LocalSearchResult):
-    algorith_name : str = "Simulated Annealing"
+    algorithm_name : str = "Simulated Annealing"
     acceptance_history_per_iteration : list[float]
     stuck_frequency : int
 
-    def visualize(self, width : int, height : int):
-        canvas = Canvas(width, height, 3, 2)
+    def visualize(self, problem : Problem, width : int, height : int):
+        canvas = Canvas(width, height, 3, 3, problem.package_colors)
         
-        canvas.write_algorithm_name(self.algorith_name)
-        canvas.visualize_state(self.initial_state, "Initial State",
-                            GridLocation(0, 0))
-        canvas.visualize_state(self.final_state, "Final State",
-                            GridLocation(0, 1))
+        canvas.write_algorithm_name(self.algorithm_name)
+        
         canvas.draw_line_chart(ChartInput(self.objective_values_history_per_iteration,
                                     "Objective Values per Iteration", "Iteration", "Objective values"),
-                                    GridLocation(1,0))
+                                    GridLocation(0,1))
         canvas.draw_line_chart(ChartInput(self.acceptance_history_per_iteration,
                                     "Acceptance History per Iteration", "Iteration", "Acceptance"),
-                                    GridLocation(1,1))
-        canvas.write_sidebar_note(f"""Final Objective Value = {self.final_objective_value_result}\n
+                                    GridLocation(0,2))
+        
+        canvas.visualize_state(problem, self.initial_state, "Initial State", 1)
+        canvas.visualize_state(problem, self.final_state, "Final State", 2)
+
+        canvas.write_top_right_note(f"""Final Objective Value = {self.final_objective_value_result}\n
                                             Duration (in seconds) = {self.duration_seconds}\n
                                             Stuck Frequency = {self.stuck_frequency}\n""")
         canvas.show()

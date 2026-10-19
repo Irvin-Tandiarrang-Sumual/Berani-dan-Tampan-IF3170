@@ -1,5 +1,5 @@
 import random
-
+import colorsys
 from model.truck import Truck
 from model.package import Package
 from model.state import State, PackagePlacement
@@ -16,6 +16,7 @@ class Problem:
         self.packages = packages
         self.truck_map = {truck.id: truck for truck in trucks}
         self.package_map = {package.id: package for package in packages}
+        self.package_colors = self._generate_package_colors()
     
         if len(self.truck_map) != len(trucks):
             raise ValueError("Duplicate truck ID")
@@ -292,3 +293,20 @@ class Problem:
             if candidate is not None:
                 return candidate
         return None
+
+    def _generate_package_colors(self):
+        color_table = {}
+        num_packages = len(self.packages)
+        
+        if num_packages == 0:
+            return color_table
+
+        for i, package in enumerate(self.packages):
+            hue = i / num_packages
+            
+            rgb = colorsys.hsv_to_rgb(hue, 0.8, 0.9)
+            red, green, blue = int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255)
+            
+            color_table[package.id] = f"#{red:02x}{green:02x}{blue:02x}"
+            
+        return color_table
