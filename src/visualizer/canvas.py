@@ -82,9 +82,8 @@ class Canvas:
             inner_col_idx += 1
 
         
-        ax_3d = self.fig.add_subplot(gs_sub[0, inner_col_idx], projection = "3d")
-        ax_3d.set_title("Package Outside Truck")
-        self._draw_packages_outside(ax_3d, problem, packages_outside_truck_id)
+        ax_outside = self.fig.add_subplot(gs_sub[0, inner_col_idx])
+        self._draw_packages_outside(ax_outside, problem, packages_outside_truck_id)
 
     
     def _draw_packages_in_truck(self, ax_3d: Axes3D, truck_id: str, inside_packages: list[str], problem: Problem, state: State):
@@ -115,19 +114,45 @@ class Canvas:
         ax_3d.set_zlabel("Z")
 
         
-    def _draw_packages_outside(self, ax_3d : Axes3D, problem : Problem,
-                        outside_packages_id : list[str]):
+    
+    def _draw_packages_outside(self, ax, problem: Problem, outside_packages_id: list[str]):
+        page_size = 8
+        start = [0]
+        total = len(outside_packages_id)
 
-        x_start_point = 0
-        for package_id in outside_packages_id:
-            self._draw_package_outside(ax_3d, problem.package_map[package_id].dimension,
-                            package_id, x_start_point)
-            x_start_point += problem.package_map[package_id].dimension.w
+        def draw():
+            ax.clear()
+            ax.axis("off")
+            ax.set_title(f"Outside Packages ({total})", fontsize=10)
 
-    def _draw_package_outside(self, ax_3d : Axes3D, package_dimension : Dimension,
-                package_id : str, x_start_point : int):
-        
-        ax_3d.bar3d(x=x_start_point, y=0,
-                z=0, dx=package_dimension.w,
-                dy=package_dimension.l, dz=package_dimension.h,
-                color=self.package_color_lookup_table[package_id], edgecolor='black', alpha=0.5)
+            if total == 0:
+                ax.text(0.5, 0.5, "No outside packages", ha="center", va="center", transform=ax.transAxes)
+                return
+
+            visible = outside_packages_id[start[0]:start[0] + page_size]
+            for i, package_id in enumerate(visible):
+                package = problem.package_map[package_id]
+                dimension = package.dimension
+                y = 0.90 - i * 0.105
+
+                ax.plot(0.05, y, marker="s", markersize=7, color=self.package_color_lookup_table[package_id], transform=ax.transAxes)
+
+                ax.text(0.12, y, f"{package_id} | {dimension.w}x{dimension.l}x{dimension.h} | Value: {package.value}", fontsize=8, va="center", transform=ax.transAxes)
+
+            if total > page_size:
+                ax.text(0.05, 0.01, f"{start[0] + 1}-{min(start[0] + page_size, total)} of {total} (scroll to view)", fontsize=8, transform=ax.transAxes)
+
+        def on_scroll(event):
+            if event.inaxes is not ax:
+                return
+            step = 3 if event.button == "down" else -3
+            next_start = max(0, min(total - page_size, start[0] + step))
+
+            if next_start != start[0]:
+                start[0] = next_start
+                draw()
+                self.fig.canvas.draw_idle()
+
+        draw()
+        if total > page_size:
+            self.fig.canvas.mpl_connect("scroll_event", on_scroll)
