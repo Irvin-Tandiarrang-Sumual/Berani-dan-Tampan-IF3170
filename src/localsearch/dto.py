@@ -128,3 +128,7 @@ class GeneticAlgorithmResult(LocalSearchResult):
             MetricConfig("Population Size", self.population_size),
             MetricConfig("Iterations", self.max_iterations),
         ]
+
+@dataclass
+class SteepestAscentResult(LocalSearchResult):
+    num_of_iterations : int
