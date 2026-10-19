@@ -1,6 +1,7 @@
 from localsearch.genetic_algorithm import GeneticAlgorithm
 from localsearch.simulated_annealing import SimulatedAnnealing
 from localsearch.genetic_algorithm import GeneticAlgorithm
+from localsearch.steepest_sideways_hc import SteepestSideways
 from localsearch.local_search import LocalSearch
 from model.problem import Problem
 
@@ -35,5 +36,15 @@ class LocalSearchAlgorithmFactory:
                 
             return GeneticAlgorithm(**ga_input)
 
+            return SimulatedAnnealing(problem)
+        elif type == "steepest":
+            return SteepestSideways(problem)
+        elif type == 'sideways':
+            while (True):
+                max_side_move = input('Input maximum sideways move')
+                if max_side_move:
+                    break
+                print('Input invalid!')
+            return SteepestSideways(problem, max_side_move)
         else:
             raise ValueError()
