@@ -293,6 +293,66 @@ class Problem:
             if candidate is not None:
                 return candidate
         return None
+    
+    
+    def generate_best_neighbor_state(self, current_state: State, rng: random.Random | None = None) -> State | None:
+            """Hasilkan neighbor terbaik"""
+            if not self.is_state_valid(current_state):
+                raise ValueError("Cannot generate a neighbor from an invalid state")
+            rng = rng if rng is not None else random.Random()
+            inside_ids = [pid for pid, p in current_state.placements.items() if p.is_inside]
+            package_ids = list(self.package_map)
+            
+            best_neighbour_state = current_state
+
+            # Fase swap
+            if inside_ids and len(package_ids) >= 2:
+                for first_id in package_ids:
+                    for second_id in package_ids:
+                        if first_id == second_id:
+                            continue
+                        candidate = self._swap_packages(current_state, first_id, second_id)
+                        best_neighbour_state = self._better_state(best_neighbour_state, candidate)
+                    
+            # Fase move
+            if package_ids:
+                for id in package_ids:
+                    placement = current_state.placements[id]
+                    candidate = None
+                    max_move_iter = 80
+                    iter = 0
+                    while (not candidate and iter < max_move_iter):
+                        if placement.is_inside and rng.random() < 0.25:
+                            candidate = self._move_package(current_state, id, None, None)
+                        elif self.truck_map:
+                            truck_id = rng.choice(list(self.truck_map))
+                            candidate = self._find_feasible_placement(current_state, id, truck_id, [placement.orientation], rng)
+                        else:
+                            candidate = None
+                        iter = iter + 1
+                    best_neighbour_state = self._better_state(best_neighbour_state, candidate)
+                
+            # Fase rotate
+            if inside_ids:
+                for id in inside_ids:
+                    candidate = self._rotate_package(current_state, id, "x")
+                    best_neighbour_state = self._better_state(best_neighbour_state, candidate)
+                    
+                    candidate = self._rotate_package(current_state, id, "y")
+                    best_neighbour_state = self._better_state(best_neighbour_state, candidate)
+                    
+                    candidate = self._rotate_package(current_state, id, "z")
+                    best_neighbour_state = self._better_state(best_neighbour_state, candidate)
+                    
+            return best_neighbour_state
+            
+
+    def _better_state(self, old_state, new_state: State) -> State:
+        if self.is_state_valid(new_state):
+            if self.calculate_objective_value(new_state) > self.calculate_objective_value(new_state):
+                return new_state
+        else:
+            return old_state
 
     def _generate_package_colors(self):
         color_table = {}
