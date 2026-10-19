@@ -1,6 +1,5 @@
 from localsearch.local_search_factory import LocalSearchAlgorithmFactory
 from reader.reader import Reader
-from visualizer.visualizer import Visualizer
 
 class App:
     def __init__(self, args : list[str]):
@@ -25,5 +24,4 @@ class App:
 
         result = localsearch.execute()
 
-        # visualizer = Visualizer(states)
-        # visualizer.visualize()
+        result.visualize()
