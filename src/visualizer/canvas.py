@@ -26,7 +26,7 @@ class Canvas:
                 package_color_lookup_table : dict[str, str]):
         self.row = row
         self.column = column
-        self.fig = plt.figure(width, height)
+        self.fig = plt.figure(figsize=(width, height))
         self.gs = gridspec.GridSpec(row, column)
         self.package_color_lookup_table = package_color_lookup_table
 
@@ -61,25 +61,25 @@ class Canvas:
             0.5, 0.5, note, fontsize = 12, va = "center", linespacing = 1.5
         )
 
-    def show():
+    def show(self):
         plt.tight_layout()
         plt.show()
 
-    def visualize_state(self, problem : Problem, state : State, row_idx : int):
+    def visualize_state(self, problem : Problem, state : State, title : str,row_idx : int):
         packages_outside_truck_id = state.get_outside_package_ids()
         
         gs_sub = gridspec.GridSpecFromSubplotSpec(1, len(problem.trucks) + 1, subplot_spec=self.gs[1, :], wspace=0.5, hspace=0.5)
 
         inner_col_idx = 0
         for truck in problem.trucks:
-            package_inside_truck_ids = state.get_inside_package_ids()
+            package_inside_truck_ids = state.get_inside_package_ids(truck.id)
             ax_3d = self.fig.add_subplot(gs_sub[0, inner_col_idx], projection = "3d")
             self._draw_packages_in_truck(ax_3d, truck.id, package_inside_truck_ids, problem,
                                     state)
             inner_col_idx += 1
 
         ax_3d = self.fig.add_subplot(gs_sub[0, inner_col_idx], projection = "3d")
-        self._draw_package_outside(ax_3d, problem, packages_outside_truck_id)
+        self._draw_packages_outside(ax_3d, problem, packages_outside_truck_id)
 
     def _draw_packages_in_truck(self, ax_3d : Axes3D, truck_id : str, inside_packages : list[str],
                         problem : Problem, state : State):
@@ -102,9 +102,9 @@ class Canvas:
 
         x_start_point = 0
         for package_id in outside_packages_id:
-            self._draw_package_outside(ax_3d, problem.package_map[package_id].dimension, package_id,
-                            x_start_point,)
-            x_start_point += problem.package_map[package_id].dimension.l
+            self._draw_package_outside(ax_3d, problem.package_map[package_id].dimension,
+                            package_id, x_start_point)
+            x_start_point += problem.package_map[package_id].dimension.w
 
     def _draw_package_outside(self, ax_3d : Axes3D, package_dimension : Dimension,
                 package_id : str, x_start_point : int):
