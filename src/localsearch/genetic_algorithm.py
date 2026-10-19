@@ -121,4 +121,5 @@ class GeneticAlgorithm(LocalSearch):
             seed=self.seed,
             best_ever_state=best_state,
             best_ever_fitness=best_fitness,
+            problem=self.problem,
         )
