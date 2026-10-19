@@ -1,5 +1,8 @@
 from localsearch.genetic_algorithm import GeneticAlgorithm
 from localsearch.simulated_annealing import SimulatedAnnealing
+from localsearch.steepest_sideways_hc import SteepestSidewaysHC
+from localsearch.random_restart_hc import RandomRestartHC
+from localsearch.stochastic_hc import StochasticHC
 from localsearch.genetic_algorithm import GeneticAlgorithm
 from localsearch.steepest_sideways_hc import SteepestSideways
 from localsearch.local_search import LocalSearch
@@ -38,13 +41,28 @@ class LocalSearchAlgorithmFactory:
 
             return SimulatedAnnealing(problem)
         elif type == "steepest":
-            return SteepestSideways(problem)
+            return SteepestSidewaysHC(problem)
         elif type == 'sideways':
             while (True):
-                max_side_move = input('Input maximum sideways move: ')
-                if max_side_move:
+                try:
+                    max_side_move = int(input('Input maximum sideways move: '))
+                except ValueError:
+                    print('Input invalid! Coba lagi!')
+                if max_side_move < 0:
                     break
-                print('Input invalid!')
-            return SteepestSideways(problem, max_side_move)
+                print('Input harus >= 0!')
+            return SteepestSidewaysHC(problem, max_side_move)
+        elif type == 'random_restart':
+            while (True):
+                try:
+                    max_restart = int(input('Input maximum sideways move: '))
+                except ValueError:
+                    print('Input invalid! Coba lagi!')
+                if max_restart < 0:
+                    break
+                print('Input harus >= 0. Coba lagi!')
+            return RandomRestartHC(problem, max_restart)
+        elif type == 'stochastic':
+            return StochasticHC(problem)
         else:
             raise ValueError()

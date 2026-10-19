@@ -130,7 +130,7 @@ class GeneticAlgorithmResult(LocalSearchResult):
         ]
 
 @dataclass
-class SteepestSidewaysResult(LocalSearchResult):
+class SteepestSidewaysStochasticResult(LocalSearchResult):
     num_of_iterations : int
     
 @dataclass
