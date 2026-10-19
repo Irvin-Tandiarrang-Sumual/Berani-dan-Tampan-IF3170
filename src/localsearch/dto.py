@@ -15,7 +15,7 @@ class SimulatedAnnealingResult(LocalSearchResult):
     stuck_frequency : int
     
 @dataclass
-class SteepestSidewaysResult(LocalSearchResult):
+class SteepestSidewaysStochasticResult(LocalSearchResult):
     num_of_iterations : int
     
 @dataclass
