@@ -26,7 +26,7 @@ class SimulatedAnnealing(LocalSearch):
         result = SimulatedAnnealingResult
 
         current_state = self.problem.generate_initial_state()
-        result.initialState = current_state
+        result.initial_state = current_state
 
         iteration = 0
         start = time.time()
@@ -45,7 +45,7 @@ class SimulatedAnnealing(LocalSearch):
 
             if self._is_new_best_objective_value(result.final_objective_value_result, current_objective_value):
                 result.final_objective_value_result = current_objective_value
-                result.finalState = current_state
+                result.final_state = current_state
 
             next_state = self.problem.generate_next_random_state(current_state)
             next_objective_value= self.problem.calculate_objective_value(next_state)
