@@ -13,3 +13,7 @@ class LocalSearchResult:
 class SimulatedAnnealingResult(LocalSearchResult):
     acceptance_history_per_iteration : list[float]
     stuck_frequency : int
+    
+@dataclass
+class SteepestAscentResult(LocalSearchResult):
+    num_of_iterations : int
