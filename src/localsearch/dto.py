@@ -129,11 +129,74 @@ class GeneticAlgorithmResult(LocalSearchResult):
             MetricConfig("Iterations", self.max_iterations),
         ]
 
+# @dataclass
+# class SteepestSidewaysStochasticResult(LocalSearchResult):
+#     num_of_iterations : int
+    
+# @dataclass
+# class RandomRestartResult(LocalSearchResult):
+#     num_of_restarts : int
+#     iterations_per_restarts : list[int]
+    
+    
+    
+# ===============================================
+
+
+
 @dataclass
 class SteepestSidewaysStochasticResult(LocalSearchResult):
-    num_of_iterations : int
-    
+    algorithm_name: str = "SSS Algorithm"
+    problem: Problem | None = None
+    num_of_restarts: int = 10
+    iterations_per_restarts : list[int] = field(default_factory=list)
+
+    def _get_state_labels(self) -> tuple[str, str]:
+        return "Initial State", "Final State"
+
+    def _get_charts(self) -> list[ChartConfig]:
+        return [
+            ChartConfig(
+                "Objective Values per Iteration", "Iteration", "Objective Value",
+                [ChartSeries("Objective Value", self.objective_values_history_per_iteration)],
+            ),
+            ChartConfig(
+                "Iterations per Restart", "Restart", "Iterations",
+                [ChartSeries("Iterations", self.iterations_per_restarts)]
+            )
+        ]
+
+    def _get_extra_metrics(self) -> list[MetricConfig]:
+        return [
+            MetricConfig("Number of Restarts", self.num_of_restarts),
+        ]
+        
+        
+        
+
 @dataclass
 class RandomRestartResult(LocalSearchResult):
-    num_of_restarts : int
-    iterations_per_restarts : list[int]
+    algorithm_name: str = "Random Restart Algorithm"
+    problem: Problem | None = None
+    num_of_restarts: int = 10
+    iterations_per_restarts : list[int] = field(default_factory=list)
+
+    def _get_state_labels(self) -> tuple[str, str]:
+        return "Initial State", "Final State"
+
+    def _get_charts(self) -> list[ChartConfig]:
+        return [
+            ChartConfig(
+                "Objective Values per Iteration", "Iteration", "Objective Value",
+                [ChartSeries("Objective Value", self.objective_values_history_per_iteration)],
+            ),
+            ChartConfig(
+                "Iterations per Restart", "Restart", "Iterations",
+                [ChartSeries("Iterations", self.iterations_per_restarts)]
+            )
+        ]
+
+    def _get_extra_metrics(self) -> list[MetricConfig]:
+        return [
+            MetricConfig("Number of Restarts", self.num_of_restarts),
+        ]

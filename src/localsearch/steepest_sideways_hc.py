@@ -6,7 +6,7 @@ from random import random
 from localsearch.local_search import LocalSearch
 from model.problem import Problem
 from model.state import State
-from dto import SteepestSidewaysStochasticResult
+from localsearch.dto import SteepestSidewaysStochasticResult
 
 
 class SteepestSidewaysHC(LocalSearch):

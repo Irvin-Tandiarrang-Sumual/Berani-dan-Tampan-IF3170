@@ -6,9 +6,10 @@ from random import random
 from localsearch.local_search import LocalSearch
 from model.problem import Problem
 from model.state import State
-from dto import RandomRestartResult
+from localsearch.dto import RandomRestartResult
 
 # Asumsi Random Restart dilakukan dengan me-restart Steepest Ascent Hill Climbing berkali-kali, karena menurut sumber https://www.datacamp.com/tutorial/hill-climbing-algorithm-for-ai-in-python, saat memilih neighbor, hill climbing yang dilakukan BUKAN cek semua suksesor, melainkan cek hingga suksesor baru tidak lagi menghasilkan nilai yang lebih baik saja. 
+# Asumsi ini berdasarkan salindia perkuliahan
 
 class RandomRestartHC(LocalSearch):
     def __init__(self, problem : Problem, max_restart : int):

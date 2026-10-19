@@ -12,9 +12,9 @@ class App:
 
     def run(self):
         try:
-            problem = Reader(self.args.input_file).load_problem()
+            problem = Reader(self.inputFile).load_problem()
         except FileNotFoundError:
-            print(f"File {self.args.input_file} doesn't exist")
+            print(f"File {self.inputFile} doesn't exist")
             print("Put your file inside the tests directory")
             return
 

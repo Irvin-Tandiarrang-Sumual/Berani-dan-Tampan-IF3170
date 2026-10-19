@@ -4,7 +4,7 @@ from localsearch.steepest_sideways_hc import SteepestSidewaysHC
 from localsearch.random_restart_hc import RandomRestartHC
 from localsearch.stochastic_hc import StochasticHC
 from localsearch.genetic_algorithm import GeneticAlgorithm
-from localsearch.steepest_sideways_hc import SteepestSideways
+from localsearch.steepest_sideways_hc import SteepestSidewaysHC
 from localsearch.local_search import LocalSearch
 from model.problem import Problem
 
@@ -43,24 +43,10 @@ class LocalSearchAlgorithmFactory:
         elif type == "steepest":
             return SteepestSidewaysHC(problem)
         elif type == 'sideways':
-            while (True):
-                try:
-                    max_side_move = int(input('Input maximum sideways move: '))
-                except ValueError:
-                    print('Input invalid! Coba lagi!')
-                if max_side_move < 0:
-                    break
-                print('Input harus >= 0!')
+            max_side_move = kwargs["max_side_move"]
             return SteepestSidewaysHC(problem, max_side_move)
         elif type == 'random_restart':
-            while (True):
-                try:
-                    max_restart = int(input('Input maximum sideways move: '))
-                except ValueError:
-                    print('Input invalid! Coba lagi!')
-                if max_restart < 0:
-                    break
-                print('Input harus >= 0. Coba lagi!')
+            max_restart = kwargs["max_restart"]
             return RandomRestartHC(problem, max_restart)
         elif type == 'stochastic':
             return StochasticHC(problem)
