@@ -128,3 +128,12 @@ class GeneticAlgorithmResult(LocalSearchResult):
             MetricConfig("Population Size", self.population_size),
             MetricConfig("Iterations", self.max_iterations),
         ]
+
+@dataclass
+class SteepestSidewaysStochasticResult(LocalSearchResult):
+    num_of_iterations : int
+    
+@dataclass
+class RandomRestartResult(LocalSearchResult):
+    num_of_restarts : int
+    iterations_per_restarts : list[int]
