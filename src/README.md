@@ -4,8 +4,15 @@
 Template:
 `python main.py <algorithm_type> <input_filename>`
 
-Example:
+Example (dari `root`):
+
 `python main.py simulated_annealing dummy-data-example.json`
+
+Opsi lain menjalankan Simulated Annealing:
+`python main.py simulated_annealing dummy-data-example.json --temperature 100 --alpha 0.95 --min_temperature 0.1 --max_iterations 100`
+
+Opsi lain menjalankan Genetic Algorithm
+`python main.py genetic_algorithm dummy-data-example.json --population_size 20 --max_iterations 100 --seed 42`
 
 Notes :
 - `algorithm_type` : the types are listed on the `local_search_factory.py`, to add new type just add another in the if-else branch

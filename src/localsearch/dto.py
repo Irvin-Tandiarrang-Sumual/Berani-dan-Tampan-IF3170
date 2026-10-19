@@ -72,9 +72,9 @@ class LocalSearchResult(ABC):
 
 @dataclass
 class SimulatedAnnealingResult(LocalSearchResult):
-    algorithm_name: str = "Simulated Annealing"
+    algorithm_name : str = "Simulated Annealing"
     acceptance_history_per_iteration: list[float] = field(default_factory=list)
-    stuck_frequency: int = 0
+    stuck_frequency : float = 0.0
 
     def _get_charts(self) -> list[ChartConfig]:
         return [
