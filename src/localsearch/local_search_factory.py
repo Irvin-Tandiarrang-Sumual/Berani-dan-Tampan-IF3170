@@ -41,7 +41,7 @@ class LocalSearchAlgorithmFactory:
             return SteepestSideways(problem)
         elif type == 'sideways':
             while (True):
-                max_side_move = input('Input maximum sideways move')
+                max_side_move = input('Input maximum sideways move: ')
                 if max_side_move:
                     break
                 print('Input invalid!')
