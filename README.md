@@ -96,19 +96,33 @@ python src/main.py genetic_algorithm dummy-data-example.json ga.pickle --populat
 ### Steepest Ascent Hill Climbing
 
 ```bash
-python src/main.py steepest dummy-data-example.json ga.pickle 
+python src/main.py steepest dummy-data-example.json steepest.pickle 
 ```
 
 ### Stochastic Ascent Hill Climbing
 
 ```bash
-python src/main.py stochastic dummy-data-example.json ga.pickle 
+python src/main.py stochastic dummy-data-example.json stochastic.pickle 
 ```
 
 ### Random Restart Hill Climbing
 
+| Parameter | Tipe | Contoh | Keterangan |
+|---|---|---:|---|
+| `--max_restart` | `int` | `20` | Banyak restart maksimum, minimal 0 |
+
 ```bash
-python src/main.py random_restart dummy-data-example.json ga.pickle --max_restart 3
+python src/main.py random_restart dummy-data-example.json random_restart.pickle --max_restart 3
+```
+
+### Sideways Hill Climbing
+
+| Parameter | Tipe | Contoh | Keterangan |
+|---|---|---:|---|
+| `--max_side_move` | `int` | `20` | Banyak pergerakan ke samping (flat) maksimum, minimal 0 |
+
+```bash
+python src/main.py sideways dummy-data-example.json sideways.pickle --max_side_move 3
 ```
 
 ## Membuka Hasil Visualisasi
