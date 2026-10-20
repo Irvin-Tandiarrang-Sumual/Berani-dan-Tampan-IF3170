@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from model.problem import Problem
 from model.state import State
@@ -59,7 +60,7 @@ class LocalSearchResult(ABC):
             final_population=final_population,
         )
 
-    def visualize(self, problem: Problem, width: int = 15, height: int = 12) -> None:
+    def visualize(self, problem: Problem, output_filename: str, width: int = 15, height: int = 12) -> None:
         data = self.to_visualization_data(problem)
         canvas = Canvas(width, height, 3, 2, problem.package_colors)
         canvas.write_algorithm_name(data.algorithm_name)
@@ -67,6 +68,7 @@ class LocalSearchResult(ABC):
         canvas.visualize_state(problem, data.final_state, data.final_state_label, 1, data.final_population)
         canvas.draw_charts(data.charts)
         canvas.draw_metrics(data.metrics)
+        canvas.dump(Path(__file__).resolve().parent.parent.parent / "output" / output_filename)
         canvas.show()
 
 

@@ -7,8 +7,9 @@ class App:
     def __init__(self, args : list[str]):
         self.algorithm = args[1]
         self.inputFile = args[2]
+        self.outputFile = args[3]
 
-        self.kwargs = self._construct_kwargs(args[3:])
+        self.kwargs = self._construct_kwargs(args[4:])
 
     def run(self):
         try:
@@ -25,7 +26,7 @@ class App:
             return
 
         result = localsearch.execute()
-        result.visualize(problem, 15, 12)
+        result.visualize(problem, self.outputFile, 15, 12)
 
     def _construct_kwargs(self, optional_args : list[str]):
         kw = {}
