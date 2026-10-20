@@ -14,6 +14,18 @@ Opsi lain menjalankan Simulated Annealing:
 Opsi lain menjalankan Genetic Algorithm
 `python main.py genetic_algorithm dummy-data-example.json --population_size 20 --max_iterations 100 --seed 42`
 
+Opsi menjalankan Sideways Algorithm
+`python main.py sideways dummy-data-example.json`
+
+Opsi menjalankan Random Restart Algorithm
+`python main.py random_restart dummy-data-example.json`
+
+Opsi menjalankan Stochastic Hill Climbing Algorithm
+`python main.py stochastic dummy-data-example.json`
+
+Opsi menjalankan Steepest Ascent Hill Climbing Algorithm
+`python main.py steepest dummy-data-example.json`
+
 Notes :
 - `algorithm_type` : the types are listed on the `local_search_factory.py`, to add new type just add another in the if-else branch
 - `input_filename` : currently all the input must be on the `tests` directory to be detected

@@ -1,11 +1,10 @@
 from localsearch.genetic_algorithm import GeneticAlgorithm
 from localsearch.simulated_annealing import SimulatedAnnealing
-from localsearch.steepest_sideways_hc import SteepestSidewaysHC
 from localsearch.random_restart_hc import RandomRestartHC
 from localsearch.stochastic_hc import StochasticHC
 from localsearch.genetic_algorithm import GeneticAlgorithm
-from localsearch.steepest_sideways_hc import SteepestSidewaysHC
 from localsearch.steepest_hc import SteepestHC
+from localsearch.sideways_hc import SidewaysHC
 from localsearch.local_search import LocalSearch
 from model.problem import Problem
 
@@ -48,7 +47,7 @@ class LocalSearchAlgorithmFactory:
             sideways_input = {"problem": problem}
             if 'max_side_move' in kwargs:
                sideways_input["max_side_move"] = kwargs["max_side_move"]
-            return SteepestSidewaysHC(**sideways_input)
+            return SidewaysHC(**sideways_input)
         
         elif type == 'random_restart':
             random_restart_input = {"problem": problem}
