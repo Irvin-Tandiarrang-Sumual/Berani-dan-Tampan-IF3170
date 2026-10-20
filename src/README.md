@@ -2,17 +2,20 @@
 
 ## Usage
 Template:
-`python main.py <algorithm_type> <input_filename>`
+`python main.py <algorithm_type> <input_filename> <output_filename>`
 
 Example (dari `root`):
 
-`python main.py simulated_annealing dummy-data-example.json`
+`python main.py simulated_annealing dummy-data-example.json output123.pickle`
 
 Opsi lain menjalankan Simulated Annealing:
-`python main.py simulated_annealing dummy-data-example.json --temperature 100 --alpha 0.95 --min_temperature 0.1 --max_iterations 100`
+`python main.py simulated_annealing dummy-data-example.json output123.pickle --temperature 100 --alpha 0.95 --min_temperature 0.1 --max_iterations 100`
 
 Opsi lain menjalankan Genetic Algorithm
-`python main.py genetic_algorithm dummy-data-example.json --population_size 20 --max_iterations 100 --seed 42`
+`python main.py genetic_algorithm dummy-data-example.json genetic_algorithm.pickle --population_size 20 --max_iterations 100 --seed 42`
+
+Untuk membuka hasil visualisasi:
+`python open_visualizer.py output123.pickle`
 
 Notes :
 - `algorithm_type` : the types are listed on the `local_search_factory.py`, to add new type just add another in the if-else branch

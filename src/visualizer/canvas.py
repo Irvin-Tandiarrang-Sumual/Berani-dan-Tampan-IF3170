@@ -1,8 +1,10 @@
 from model.state import State
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
 from mpl_toolkits.mplot3d import Axes3D
 from dataclasses import dataclass
+from pathlib import Path
 from model.state import PackagePlacement
 from model.problem import Problem
 from type.dimension import Dimension
@@ -42,8 +44,13 @@ class Canvas:
         self._truck_buttons = []
         self._truck_label = None
         self._population_buttons = []
+        self._saved_states = {}
+        self._algorithm_name = None
+        self._charts = []
+        self._metrics = []
 
     def write_algorithm_name(self, algorithm_name: str):
+        self._algorithm_name = algorithm_name
         self.fig.suptitle(algorithm_name, fontsize=16, fontweight="bold", y=0.985)
     
     def draw_line_chart(self, chart_input : ChartInput, grid_location : GridLocation):
@@ -54,6 +61,7 @@ class Canvas:
         ax.set_ylabel(chart_input.y_label)
     
     def draw_charts(self, charts: list[ChartConfig]):
+        self._charts = charts
         if len(charts) > 2:
             raise ValueError("The current layout supports at most two charts")
 
@@ -76,6 +84,7 @@ class Canvas:
                 ax.legend(fontsize=8)
                 
     def draw_metrics(self, metrics: list[MetricConfig]):
+        self._metrics = metrics
         ax = self.fig.add_subplot(self.gs[2, :])
         ax.axis("off")
 
@@ -114,12 +123,61 @@ class Canvas:
     def show(self):
         plt.show()
 
+    def dump(self, filename: str | Path) -> None:
+        output_path = Path(filename)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        data = {
+            "width": self.fig.get_figwidth(),
+            "height": self.fig.get_figheight(),
+            "row": self.row,
+            "column": self.column,
+            "package_colors": self.package_color_lookup_table,
+            "algorithm_name": self._algorithm_name,
+            "states": self._saved_states,
+            "charts": self._charts,
+            "metrics": self._metrics,
+        }
+        with output_path.open("wb") as file:
+            pickle.dump(data, file)
+
+    @staticmethod
+    def load(filename: str | Path) -> "Canvas":
+        with Path(filename).open("rb") as file:
+            data = pickle.load(file)
+
+        canvas = Canvas(
+            data["width"],
+            data["height"],
+            data["row"],
+            data["column"],
+            data["package_colors"],
+        )
+        canvas.write_algorithm_name(data["algorithm_name"])
+        for column_idx, state_data in sorted(data["states"].items()):
+            canvas.visualize_state(
+                state_data["problem"],
+                state_data["state"],
+                state_data["title"],
+                column_idx,
+                state_data["population"],
+            )
+        canvas.draw_charts(data["charts"])
+        canvas.draw_metrics(data["metrics"])
+        return canvas
+
     def visualize_state(self, problem: Problem, state: State,
                         title: str, column_idx: int, population: list[State] | None = None):
         if not problem.trucks:
             raise ValueError("At least one truck is required")
         if population is not None and not population:
             raise ValueError("Population cannot be empty")
+
+        self._saved_states[column_idx] = {
+            "problem": problem,
+            "state": state,
+            "title": title,
+            "population": population,
+        }
         
         if self._truck_problem is None:
             self._truck_problem = problem

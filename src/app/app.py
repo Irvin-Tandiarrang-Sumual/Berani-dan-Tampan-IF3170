@@ -7,25 +7,26 @@ class App:
     def __init__(self, args : list[str]):
         self.algorithm = args[1]
         self.inputFile = args[2]
+        self.outputFile = args[3]
 
-        self.kwargs = self._construct_kwargs(args[3:])
+        self.kwargs = self._construct_kwargs(args[4:])
 
     def run(self):
         try:
-            problem = Reader(self.args.input_file).load_problem()
+            problem = Reader(self.inputFile).load_problem()
         except FileNotFoundError:
-            print(f"File {self.args.input_file} doesn't exist")
+            print(f"File {self.inputFile} doesn't exist")
             print("Put your file inside the tests directory")
             return
 
         try:
-            localsearch = LocalSearchAlgorithmFactory.getLocalSearchAlgorithm(self.algorithm, problem, **self.kwargs)
+            localsearch = LocalSearchAlgorithmFactory().getLocalSearchAlgorithm(self.algorithm, problem, **self.kwargs)
         except ValueError:
             print(f"Selected algorithm {self.algorithm} doesn't exist")
             return
 
         result = localsearch.execute()
-        result.visualize(problem, 15, 12)
+        result.visualize(problem, self.outputFile, 15, 12)
 
     def _construct_kwargs(self, optional_args : list[str]):
         kw = {}
