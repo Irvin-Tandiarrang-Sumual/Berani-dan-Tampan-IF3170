@@ -5,6 +5,7 @@ from localsearch.random_restart_hc import RandomRestartHC
 from localsearch.stochastic_hc import StochasticHC
 from localsearch.genetic_algorithm import GeneticAlgorithm
 from localsearch.steepest_sideways_hc import SteepestSidewaysHC
+from localsearch.steepest_hc import SteepestHC
 from localsearch.local_search import LocalSearch
 from model.problem import Problem
 
@@ -38,17 +39,26 @@ class LocalSearchAlgorithmFactory:
                 ga_input["seed"] = kwargs["seed"]
                 
             return GeneticAlgorithm(**ga_input)
+        
         elif type == "steepest":
-            return SteepestSidewaysHC(problem)
+            steepest_input = {"problem": problem}
+            return SteepestHC(**steepest_input)
+        
         elif type == 'sideways':
+            sideways_input = {"problem": problem}
             if 'max_side_move' in kwargs:
-                max_side_move = kwargs["max_side_move"]
-            return SteepestSidewaysHC(problem, max_side_move)
+               sideways_input["max_side_move"] = kwargs["max_side_move"]
+            return SteepestSidewaysHC(**sideways_input)
+        
         elif type == 'random_restart':
+            random_restart_input = {"problem": problem}
             if 'max_restart' in kwargs:
-                max_restart = kwargs["max_restart"]
-            return RandomRestartHC(problem, max_restart)
+                random_restart_input["max_restart"] = kwargs["max_restart"]
+            return RandomRestartHC(**random_restart_input)
+        
         elif type == 'stochastic':
-            return StochasticHC(problem)
+            stochastic_input = {"problem": problem}
+            return StochasticHC(**stochastic_input)
+        
         else:
             raise ValueError()

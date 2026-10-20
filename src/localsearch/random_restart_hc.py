@@ -12,29 +12,29 @@ from localsearch.dto import RandomRestartResult
 # Asumsi ini berdasarkan salindia perkuliahan
 
 class RandomRestartHC(LocalSearch):
-    def __init__(self, problem : Problem, max_restart : int):
+    def __init__(self, problem : Problem, 
+                    max_restart : int = 10):
         super().__init__(problem)
         self.max_restart = max_restart
-
+        
     def execute(self) -> RandomRestartResult:
-        result = RandomRestartResult
+        result = RandomRestartResult()
         current_state = self.problem.generate_initial_state()
-        result.initialState = current_state
         max_obj_value = self.problem.calculate_objective_value(current_state)
-        best_state = current_state
+        best_state = current_state.copy()
+        
+        result.initial_state = current_state.copy()
 
         iteration = 0
         start = time.time()
 
         result.final_objective_value_result = -1
-        
         num_of_restarts = 0
-        
         is_restart = False
 
         while(True): 
             current_state = self.problem.generate_best_neighbor_state(best_state)
-            current_objective_value = current_state.problem.calculate_objective_value(current_state)
+            current_objective_value = self.problem.calculate_objective_value(current_state)
 
             result.objective_values_history_per_iteration.append(current_objective_value)
             iteration += 1
@@ -48,12 +48,12 @@ class RandomRestartHC(LocalSearch):
                 
                 iteration = 0
                 current_state = self.problem.generate_initial_state()
-                result.initialState = current_state
+                result.initial_state = current_state
                 max_obj_value = self.problem.calculate_objective_value(current_state)
                 best_state = current_state
             else:
                 end = time.time()
                 result.duration_seconds = (end - start)
-                result.finalState = best_state
+                result.final_state = best_state
                 result.final_objective_value_result = max_obj_value
                 return result

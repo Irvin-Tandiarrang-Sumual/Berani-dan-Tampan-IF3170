@@ -303,8 +303,9 @@ class Problem:
             inside_ids = [pid for pid, p in current_state.placements.items() if p.is_inside]
             package_ids = list(self.package_map)
             
-            best_neighbour_state = current_state
-
+            best_neighbour_state = current_state.copy()
+            
+            
             # Fase swap
             if inside_ids and len(package_ids) >= 2:
                 for first_id in package_ids:
@@ -312,8 +313,10 @@ class Problem:
                         if first_id == second_id:
                             continue
                         candidate = self._swap_packages(current_state, first_id, second_id)
-                        best_neighbour_state = self._better_state(best_neighbour_state, candidate)
-                    
+                        if self.is_state_valid(candidate):
+                            if self.calculate_objective_value(candidate) > self.calculate_objective_value(best_neighbour_state):
+                                best_neighbour_state = candidate.copy()
+            
             # Fase move
             if package_ids:
                 for id in package_ids:
@@ -330,29 +333,33 @@ class Problem:
                         else:
                             candidate = None
                         iter = iter + 1
-                    best_neighbour_state = self._better_state(best_neighbour_state, candidate)
+                    if candidate is None:
+                        continue
+                    if best_neighbour_state is None:
+                        print('move none')
+                    if self.is_state_valid(candidate):
+                        if self.calculate_objective_value(candidate) > self.calculate_objective_value(best_neighbour_state):
+                            best_neighbour_state = candidate.copy()
                 
             # Fase rotate
             if inside_ids:
                 for id in inside_ids:
                     candidate = self._rotate_package(current_state, id, "x")
-                    best_neighbour_state = self._better_state(best_neighbour_state, candidate)
+                    if self.is_state_valid(candidate):
+                        if self.calculate_objective_value(candidate) > self.calculate_objective_value(best_neighbour_state):
+                            best_neighbour_state = candidate.copy()
                     
                     candidate = self._rotate_package(current_state, id, "y")
-                    best_neighbour_state = self._better_state(best_neighbour_state, candidate)
+                    if self.is_state_valid(candidate):
+                        if self.calculate_objective_value(candidate) > self.calculate_objective_value(best_neighbour_state):
+                            best_neighbour_state = candidate.copy()
                     
                     candidate = self._rotate_package(current_state, id, "z")
-                    best_neighbour_state = self._better_state(best_neighbour_state, candidate)
-                    
-            return best_neighbour_state
+                    if self.is_state_valid(candidate):
+                        if self.calculate_objective_value(candidate) > self.calculate_objective_value(best_neighbour_state):
+                            best_neighbour_state = candidate.copy()
             
-
-    def _better_state(self, old_state, new_state: State) -> State:
-        if self.is_state_valid(new_state):
-            if self.calculate_objective_value(new_state) > self.calculate_objective_value(new_state):
-                return new_state
-        else:
-            return old_state
+            return best_neighbour_state
 
     def _generate_package_colors(self):
         color_table = {}

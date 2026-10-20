@@ -36,12 +36,14 @@ class LocalSearchResult(ABC):
         initial_label, final_label = self._get_state_labels()
         initial_population, final_population = self._get_populations()
         final_value = problem.calculate_objective_value(self.final_state)
-
+        
         metrics = [
             MetricConfig("Final Objective Value", final_value),
-            MetricConfig("Duration", f"{self.duration_seconds:.3f}", "s"),
-            *self._get_extra_metrics(),
+            MetricConfig("Duration", f"{self.duration_seconds:.3f}", "s")
         ]
+
+        if self._get_extra_metrics() is not None:
+            metrics.append(*self._get_extra_metrics())
 
         return VisualizationData(
             algorithm_name=self.algorithm_name,
@@ -129,26 +131,11 @@ class GeneticAlgorithmResult(LocalSearchResult):
             MetricConfig("Iterations", self.max_iterations),
         ]
 
-# @dataclass
-# class SteepestSidewaysStochasticResult(LocalSearchResult):
-#     num_of_iterations : int
-    
-# @dataclass
-# class RandomRestartResult(LocalSearchResult):
-#     num_of_restarts : int
-#     iterations_per_restarts : list[int]
-    
-    
-    
-# ===============================================
-
-
-
 @dataclass
 class SteepestSidewaysStochasticResult(LocalSearchResult):
     algorithm_name: str = "SSS Algorithm"
     problem: Problem | None = None
-    num_of_restarts: int = 10
+    num_of_iterations: int = 10
     iterations_per_restarts : list[int] = field(default_factory=list)
 
     def _get_state_labels(self) -> tuple[str, str]:
@@ -159,10 +146,6 @@ class SteepestSidewaysStochasticResult(LocalSearchResult):
             ChartConfig(
                 "Objective Values per Iteration", "Iteration", "Objective Value",
                 [ChartSeries("Objective Value", self.objective_values_history_per_iteration)],
-            ),
-            ChartConfig(
-                "Iterations per Restart", "Restart", "Iterations",
-                [ChartSeries("Iterations", self.iterations_per_restarts)]
             )
         ]
 
@@ -200,3 +183,22 @@ class RandomRestartResult(LocalSearchResult):
         return [
             MetricConfig("Number of Restarts", self.num_of_restarts),
         ]
+        
+@dataclass
+class SteepestResult(LocalSearchResult):
+    algorithm_name: str = "Steepest Ascent Hill Climbing Algorithm"
+    problem: Problem | None = None
+
+    def _get_state_labels(self) -> tuple[str, str]:
+        return "Initial State", "Final State"
+
+    def _get_charts(self) -> list[ChartConfig]:
+        return [
+            ChartConfig(
+                "Objective Values per Iteration", "Iteration", "Objective Value",
+                [ChartSeries("Objective Value", self.objective_values_history_per_iteration)],
+            )
+        ]
+    
+    def _get_extra_metrics(self) -> list[MetricConfig]:
+        return None
