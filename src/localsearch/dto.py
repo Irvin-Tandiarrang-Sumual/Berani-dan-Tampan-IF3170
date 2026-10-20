@@ -40,11 +40,9 @@ class LocalSearchResult(ABC):
         
         metrics = [
             MetricConfig("Final Objective Value", final_value),
-            MetricConfig("Duration", f"{self.duration_seconds:.3f}", "s")
+            MetricConfig("Duration", f"{self.duration_seconds:.3f}", "s"),
+            *self._get_extra_metrics()
         ]
-
-        if self._get_extra_metrics() is not None:
-            metrics.append(*self._get_extra_metrics())
 
         return VisualizationData(
             algorithm_name=self.algorithm_name,

@@ -93,6 +93,24 @@ python src/main.py simulated_annealing dummy-data-example.json sa.pickle --tempe
 python src/main.py genetic_algorithm dummy-data-example.json ga.pickle --population_size 20 --max_iterations 100 --seed 42
 ```
 
+### Steepest Ascent Hill Climbing
+
+```bash
+python src/main.py steepest dummy-data-example.json ga.pickle 
+```
+
+### Stochastic Ascent Hill Climbing
+
+```bash
+python src/main.py stochastic dummy-data-example.json ga.pickle 
+```
+
+### Random Restart Hill Climbing
+
+```bash
+python src/main.py random_restart dummy-data-example.json ga.pickle --max_restart 3
+```
+
 ## Membuka Hasil Visualisasi
 
 Setelah program selesai, file hasil berada di folder `output`. Untuk membuka
