@@ -1,0 +1,165 @@
+{
+  "trucks": [
+    {
+      "dimension": {
+        "w": 10,
+        "l": 14,
+        "h": 5
+      },
+      "maxCapacity": 35
+    },
+    {
+      "dimension": {
+        "w": 8,
+        "l": 12,
+        "h": 6
+      },
+      "maxCapacity": 45
+    },
+    {
+      "dimension": {
+        "w": 12,
+        "l": 10,
+        "h": 5
+      },
+      "maxCapacity": 40
+    }
+  ],
+  "packages": [
+    {
+      "id": "Package-1",
+      "dimension": {"w": 3, "l": 4, "h": 1},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 80,
+      "weight": 6,
+      "isFragile": false,
+      "ETA": 3
+    },
+    {
+      "id": "Package-2",
+      "dimension": {"w": 2, "l": 3, "h": 2},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 65,
+      "weight": 8,
+      "isFragile": false,
+      "ETA": 5
+    },
+    {
+      "id": "Package-3",
+      "dimension": {"w": 4, "l": 5, "h": 2},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 130,
+      "weight": 12,
+      "isFragile": false,
+      "ETA": 2
+    },
+    {
+      "id": "Package-4",
+      "dimension": {"w": 2, "l": 2, "h": 3},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 75,
+      "weight": 7,
+      "isFragile": true,
+      "ETA": 4
+    },
+    {
+      "id": "Package-5",
+      "dimension": {"w": 3, "l": 3, "h": 2},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 95,
+      "weight": 9,
+      "isFragile": false,
+      "ETA": 6
+    },
+    {
+      "id": "Package-6",
+      "dimension": {"w": 4, "l": 3, "h": 2},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 110,
+      "weight": 10,
+      "isFragile": false,
+      "ETA": 1
+    },
+    {
+      "id": "Package-7",
+      "dimension": {"w": 5, "l": 4, "h": 1},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 120,
+      "weight": 11,
+      "isFragile": true,
+      "ETA": 3
+    },
+    {
+      "id": "Package-8",
+      "dimension": {"w": 2, "l": 4, "h": 2},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 90,
+      "weight": 8,
+      "isFragile": false,
+      "ETA": 7
+    },
+    {
+      "id": "Package-9",
+      "dimension": {"w": 4, "l": 4, "h": 3},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 140,
+      "weight": 12,
+      "isFragile": false,
+      "ETA": 2
+    },
+    {
+      "id": "Package-10",
+      "dimension": {"w": 5, "l": 5, "h": 2},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 155,
+      "weight": 14,
+      "isFragile": false,
+      "ETA": 4
+    },
+    {
+      "id": "Package-11",
+      "dimension": {"w": 2, "l": 3, "h": 1},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 70,
+      "weight": 7,
+      "isFragile": true,
+      "ETA": 5
+    },
+    {
+      "id": "Package-12",
+      "dimension": {"w": 3, "l": 5, "h": 2},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 105,
+      "weight": 9,
+      "isFragile": false,
+      "ETA": 3
+    },
+    {
+      "id": "Package-13",
+      "dimension": {"w": 4, "l": 2, "h": 3},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 115,
+      "weight": 10,
+      "isFragile": true,
+      "ETA": 6
+    },
+    {
+      "id": "Package-14",
+      "dimension": {"w": 5, "l": 4, "h": 3},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 165,
+      "weight": 13,
+      "isFragile": false,
+      "ETA": 1
+    },
+    {
+      "id": "Package-15",
+      "dimension": {"w": 3, "l": 3, "h": 1},
+      "orientation": {"w": "x", "l": "y", "h": "z"},
+      "value": 85,
+      "weight": 8,
+      "isFragile": false,
+      "ETA": 4
+    }
+  ]
+}
